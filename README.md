@@ -43,7 +43,7 @@ docker-compose.yml:
 version: '3.8'
 services:
   fritzbox-callmonitor:
-    build: .
+    image: california444/fritzbox-callmonitor:latest
     container_name: fritzbox-callmonitor
     env_file:
       - .env
@@ -58,17 +58,22 @@ services:
     stdin_open: true
 ```
 
-Dann im Projektordner:
-
+Starte den Service mit:
 
 ```bash
-docker-compose up --build -d
+docker-compose up -d
 ```
 
 Logs anzeigen:
 
 ```bash
 docker-compose logs -f
+```
+
+Service stoppen:
+
+```bash
+docker-compose down
 ```
 
 ## Hinweise

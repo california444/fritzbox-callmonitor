@@ -1,12 +1,9 @@
 # Dockerfile für Fritzbox Callmonitor als systemd-Daemon
-FROM ubuntu:24.04
+FROM node:24-bookworm
 
-ENV DEBIAN_FRONTEND=noninteractive
-
-# System-Updates und benötigte Pakete
+# Systemd und weitere Tools installieren
 RUN apt-get update && \
-    apt-get install -y systemd nodejs npm curl && \
-    npm install -g npm && \
+    apt-get install -y systemd && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Arbeitsverzeichnis

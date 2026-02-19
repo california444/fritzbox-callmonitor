@@ -1,10 +1,10 @@
 version: '3.8'
 services:
   fritzbox-callmonitor:
-    build: .
+    image: california444/fritzbox-callmonitor:latest
     container_name: fritzbox-callmonitor
     # env_file:
-      #. - .env
+    #   - .env
     environment:
       # Alternativ zu .env können die Variablen hier gesetzt werden:
       FRITZBOX_IP: "192.168.0.1"
@@ -12,7 +12,5 @@ services:
       TELEGRAM_CHAT_ID: "DEINE_CHAT_ID_HIER"
     restart: always
     privileged: true
-    # systemd benötigt diese Flags
     tty: true
     stdin_open: true
-    # Ports müssen nicht veröffentlicht werden, da der Callmonitor die Fritzbox aktiv kontaktiert
