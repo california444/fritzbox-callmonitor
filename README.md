@@ -1,0 +1,80 @@
+# Fritzbox Callmonitor mit Telegram-Benachrichtigung
+
+Dieses Projekt überwacht eingehende Anrufe auf deiner Fritzbox und sendet eine Benachrichtigung per Telegram.
+
+## Features
+- Überwachung der Fritzbox über den Callmonitor-Port (1012)
+- Telegram-Benachrichtigung bei jedem eingehenden Anruf
+- Läuft als systemd-Daemon im Docker-Container
+- Konfiguration über `.env` oder direkt im Compose-File
+
+## Voraussetzungen
+- Fritzbox mit aktiviertem Callmonitor
+- Telegram-Bot und Chat-ID
+- Docker und Docker Compose
+
+## Einrichtung
+
+### 1. Telegram-Bot erstellen
+- Schreibe an [@BotFather](https://t.me/BotFather) auf Telegram.
+- Erstelle einen neuen Bot und notiere den Bot-Token.
+- Sende deinem Bot eine Nachricht und rufe dann
+  `https://api.telegram.org/bot<DEIN_BOT_TOKEN>/getUpdates` auf, um die Chat-ID zu finden.
+
+### 2. Callmonitor auf der Fritzbox aktivieren
+- Telefon an die Fritzbox anschließen.
+- Wähle: `#96*5*` (und auflegen).
+- Zum Deaktivieren: `#96*4*`
+
+### 3. Konfiguration
+- Lege eine `.env`-Datei an (oder nutze das `environment`-Feld im Compose-File):
+
+```
+FRITZBOX_IP=192.168.0.1
+TELEGRAM_BOT_TOKEN=DEIN_BOT_TOKEN_HIER
+TELEGRAM_CHAT_ID=DEINE_CHAT_ID_HIER
+```
+
+### 4. Start mit Docker Compose
+
+```yaml
+docker-compose.yml:
+
+version: '3.8'
+services:
+  fritzbox-callmonitor:
+    build: .
+    container_name: fritzbox-callmonitor
+    env_file:
+      - .env
+    environment:
+      # Alternativ zu .env können die Variablen hier gesetzt werden:
+      # FRITZBOX_IP: "192.168.0.1"
+      # TELEGRAM_BOT_TOKEN: "DEIN_BOT_TOKEN_HIER"
+      # TELEGRAM_CHAT_ID: "DEINE_CHAT_ID_HIER"
+    restart: always
+    privileged: true
+    tty: true
+    stdin_open: true
+```
+
+Dann im Projektordner:
+
+
+```bash
+docker-compose up --build -d
+```
+
+Logs anzeigen:
+
+```bash
+docker-compose logs -f
+```
+
+## Hinweise
+- Der Callmonitor muss auf der Fritzbox aktiviert sein.
+- Die IP-Adresse der Fritzbox ggf. anpassen.
+- Der Container benötigt `privileged`, damit systemd funktioniert.
+
+## Lizenz
+MIT

@@ -1,0 +1,14 @@
+[Unit]
+Description=Fritzbox Callmonitor Telegram Daemon
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/fritzbox-callmonitor
+ExecStart=/usr/bin/node /opt/fritzbox-callmonitor/fritzbox_callmonitor.js
+Restart=always
+RestartSec=5
+User=root
+
+[Install]
+WantedBy=multi-user.target
