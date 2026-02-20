@@ -28,13 +28,17 @@ function log(msg) {
   console.log(`[${ts}] ${msg}`);
 }
 
+
+let client = null;
+let shuttingDown = false;
+
 function startMonitor() {
   log('='.repeat(60));
   log('FRITZ!Box Callmonitor (Port 1012)');
   log('='.repeat(60));
   log(`Connecting to ${FRITZBOX_IP}:${FRITZBOX_PORT} ...`);
 
-  let client = net.createConnection({ host: FRITZBOX_IP, port: FRITZBOX_PORT }, () => {
+  client = net.createConnection({ host: FRITZBOX_IP, port: FRITZBOX_PORT }, () => {
     log('Connected to server!');
   });
 
@@ -65,13 +69,13 @@ function startMonitor() {
 
   client.on('end', () => {
     log('Disconnected from server.');
-    reconnect();
+    if (!shuttingDown) reconnect();
   });
 
   client.on('error', (err) => {
     log('Connection error: ' + err.message);
     try { client.destroy(); } catch {}
-    reconnect();
+    if (!shuttingDown) reconnect();
   });
 
   function reconnect() {
@@ -79,6 +83,30 @@ function startMonitor() {
     setTimeout(startMonitor, RECONNECT_DELAY_MS);
   }
 }
+
+function shutdownHandler(signal) {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  log(`Received ${signal}, shutting down...`);
+  if (client) {
+    try {
+      client.end();
+      client.destroy();
+    } catch {}
+  }
+  setTimeout(() => {
+    log('Shutdown complete.');
+    process.exit(0);
+  }, 500);
+}
+
+process.on('SIGINT', () => shutdownHandler('SIGINT'));
+process.on('SIGTERM', () => shutdownHandler('SIGTERM'));
+process.on('SIGQUIT', () => shutdownHandler('SIGQUIT'));
+process.on('uncaughtException', (err) => {
+  log('Uncaught Exception: ' + err.message);
+  shutdownHandler('uncaughtException');
+});
 
 // Start as daemon
 startMonitor();
