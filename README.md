@@ -5,7 +5,8 @@ Dieses Projekt überwacht eingehende Anrufe auf deiner Fritzbox und sendet eine 
 ## Features
 - Überwachung der Fritzbox über den Callmonitor-Port (1012)
 - Telegram-Benachrichtigung bei jedem eingehenden Anruf
-- Läuft als systemd-Daemon im Docker-Container
+- Läuft als Node.js-Daemon im Docker-Container (kein systemd nötig)
+- Quellcode wird im Dockerfile direkt aus dem GitHub-Repo geladen
 - Konfiguration über `.env` oder direkt im Compose-File
 
 ## Voraussetzungen
@@ -27,7 +28,7 @@ Dieses Projekt überwacht eingehende Anrufe auf deiner Fritzbox und sendet eine 
 - Zum Deaktivieren: `#96*4*`
 
 ### 3. Konfiguration
-- Lege eine `.env`-Datei an (oder nutze das `environment`-Feld im Compose-File):
+Lege eine `.env`-Datei an (oder nutze das `environment`-Feld im Compose-File):
 
 ```
 FRITZBOX_IP=192.168.0.1
@@ -35,7 +36,22 @@ TELEGRAM_BOT_TOKEN=DEIN_BOT_TOKEN_HIER
 TELEGRAM_CHAT_ID=DEINE_CHAT_ID_HIER
 ```
 
-### 4. Start mit Docker Compose
+Die Datei `.env` sollte nicht ins Repository eingecheckt werden und ist in `.gitignore` eingetragen.
+
+### 4. Start mit Docker
+
+Der Container lädt den Quellcode automatisch aus dem GitHub-Repo:
+
+```Dockerfile
+FROM node:24-bookworm
+WORKDIR /app
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+RUN git clone https://github.com/california444/fritzbox-callmonitor.git .
+RUN npm install --omit=dev
+CMD ["node", "fritzbox_callmonitor.js"]
+```
+
+Mit Docker Compose:
 
 ```yaml
 docker-compose.yml:
@@ -43,17 +59,16 @@ docker-compose.yml:
 version: '3.8'
 services:
   fritzbox-callmonitor:
-    image: california444/fritzbox-callmonitor:latest
+    build: .
     container_name: fritzbox-callmonitor
-    env_file:
-      - .env
+    # Alternativ zu den Variablen kann hier ein .env gesetzt werden:
+    # env_file:
+      # - .env
     environment:
-      # Alternativ zu .env können die Variablen hier gesetzt werden:
-      # FRITZBOX_IP: "192.168.0.1"
-      # TELEGRAM_BOT_TOKEN: "DEIN_BOT_TOKEN_HIER"
-      # TELEGRAM_CHAT_ID: "DEINE_CHAT_ID_HIER"
+      FRITZBOX_IP: "192.168.0.1"
+      TELEGRAM_BOT_TOKEN: "DEIN_BOT_TOKEN_HIER"
+      TELEGRAM_CHAT_ID: "DEINE_CHAT_ID_HIER"
     restart: always
-    privileged: true
     tty: true
     stdin_open: true
 ```
@@ -79,7 +94,7 @@ docker-compose down
 ## Hinweise
 - Der Callmonitor muss auf der Fritzbox aktiviert sein.
 - Die IP-Adresse der Fritzbox ggf. anpassen.
-- Der Container benötigt `privileged`, damit systemd funktioniert.
+- Die Datei `.env` darf sensible Daten enthalten und ist durch `.gitignore` geschützt.
 
 ## Lizenz
 MIT
