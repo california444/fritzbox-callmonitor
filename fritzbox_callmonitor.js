@@ -7,12 +7,12 @@
 //    → Der Callmonitor ist jetzt auf Port 1012 aktiv.
 // 3. Zum Deaktivieren: #96*4*
 //
+
 // Usage: node fritzbox_callmonitor.js
 
-
-require('dotenv').config();
-const net = require('net');
-const TelegramBot = require('node-telegram-bot-api');
+import 'dotenv/config';
+import net from 'net';
+import TelegramBot from 'node-telegram-bot-api';
 
 // Konfiguration aus Umgebungsvariablen (siehe .env)
 const FRITZBOX_IP = process.env.FRITZBOX_IP || '192.168.0.1';
