@@ -58,7 +58,7 @@ docker-compose.yml:
 version: '3.8'
 services:
   fritzbox-callmonitor:
-    image: california444/fritzbox-dslstatus:latest
+    image: california444/fritzbox-callmonitor:latest
     container_name: fritzbox-callmonitor
     # Alternativ zu den Variablen kann hier ein .env gesetzt werden:
     # env_file:
