@@ -17,8 +17,8 @@ import TelegramBot from 'node-telegram-bot-api';
 // Konfiguration aus Umgebungsvariablen (siehe .env)
 const FRITZBOX_IP = process.env.FRITZBOX_IP || '192.168.0.1';
 const FRITZBOX_PORT = 1012;
-const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
-const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '';
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 const RECONNECT_DELAY_MS = 5000;
 
 const telegramBot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: false });
