@@ -5,7 +5,7 @@ Dieses Projekt überwacht eingehende Anrufe auf deiner Fritzbox und sendet eine 
 ## Features
 - Überwachung der Fritzbox über den Callmonitor-Port (1012)
 - Telegram-Benachrichtigung bei jedem eingehenden Anruf
-- Läuft als Node.js-Daemon im Docker-Container (kein systemd nötig)
+- Läuft als Node.js-Daemon im Docker-Container
 - Quellcode wird im Dockerfile direkt aus dem GitHub-Repo geladen
 - Konfiguration über `.env` oder direkt im Compose-File
 
@@ -36,8 +36,6 @@ TELEGRAM_BOT_TOKEN=DEIN_BOT_TOKEN_HIER
 TELEGRAM_CHAT_ID=DEINE_CHAT_ID_HIER
 ```
 
-Die Datei `.env` sollte nicht ins Repository eingecheckt werden und ist in `.gitignore` eingetragen.
-
 ### 4. Start mit Docker
 
 Der Container lädt den Quellcode automatisch aus dem GitHub-Repo:
@@ -53,19 +51,21 @@ CMD ["node", "fritzbox_callmonitor.js"]
 
 Mit Docker Compose:
 
-```yaml
 docker-compose.yml:
+```yaml
+
 
 version: '3.8'
 services:
   fritzbox-callmonitor:
-    build: .
+    image: california444/fritzbox-dslstatus:latest
     container_name: fritzbox-callmonitor
     # Alternativ zu den Variablen kann hier ein .env gesetzt werden:
     # env_file:
       # - .env
     environment:
       FRITZBOX_IP: "192.168.0.1"
+      # $ must be escaped with double dollar $$
       TELEGRAM_BOT_TOKEN: "DEIN_BOT_TOKEN_HIER"
       TELEGRAM_CHAT_ID: "DEINE_CHAT_ID_HIER"
     restart: always
