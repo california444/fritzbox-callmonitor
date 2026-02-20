@@ -1,27 +1,15 @@
 # Dockerfile für Fritzbox Callmonitor als systemd-Daemon
 FROM node:24-bookworm
 
-# Systemd und weitere Tools installieren
-RUN apt-get update && \
-    apt-get install -y systemd && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
 # Arbeitsverzeichnis
-WORKDIR /opt/fritzbox-callmonitor
+WORKDIR /app
 
-# Projektdateien kopieren
-COPY fritzbox_callmonitor.js ./
-COPY package*.json ./
+# Git installieren und Repo klonen
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+RUN git clone https://github.com/california444/fritzbox-callmonitor.git .
 
 # Abhängigkeiten installieren
-RUN npm install --production || :
+RUN npm install --omit=dev
 
-# Systemd Service-Unit
-COPY fritzbox-callmonitor.service /etc/systemd/system/fritzbox-callmonitor.service
-
-# Service aktivieren
-RUN systemctl enable fritzbox-callmonitor.service
-
-# systemd als Init-Prozess
-STOPSIGNAL SIGRTMIN+3
-CMD ["/sbin/init"]
+# Standard-Start: Node.js Daemon
+CMD ["node", "fritzbox_callmonitor.js"]
