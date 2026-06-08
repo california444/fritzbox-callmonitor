@@ -40,6 +40,7 @@ function startMonitor() {
 
   client = net.createConnection({ host: FRITZBOX_IP, port: FRITZBOX_PORT }, () => {
     log('Connected to server!');
+    client.setKeepAlive(true, 30 * 1000); // Detect silently dropped connections (probe after 30s idle)
   });
 
   client.on('data', (data) => {
