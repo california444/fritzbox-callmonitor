@@ -2,8 +2,11 @@
 //
 // Eigenes Modul, damit die Anbindung an node-telegram-bot-api
 // unabhängig vom laufenden Daemon geprüft werden kann.
+//
+// Der Daemon sendet ausschließlich - er empfängt keine Updates.
+// Deshalb reicht der schlanke Api-Client, kein vollständiger Bot.
 
-import TelegramBot from 'node-telegram-bot-api';
+import { Api } from 'node-telegram-bot-api';
 
 /**
  * Erzeugt einen Notifier für eingehende Anrufe.
@@ -11,18 +14,18 @@ import TelegramBot from 'node-telegram-bot-api';
  * so scheitert der Daemon beim Start und nicht erst beim ersten Anruf.
  */
 export function createTelegramNotifier({ token, chatId, log = () => {} }) {
-  const bot = new TelegramBot(token, { polling: false });
+  const api = new Api(token);
 
-  if (typeof bot.sendMessage !== 'function') {
+  if (typeof api.sendMessage !== 'function') {
     throw new TypeError(
-      'node-telegram-bot-api: bot.sendMessage fehlt - inkompatible Version?'
+      'node-telegram-bot-api: api.sendMessage fehlt - inkompatible Version?'
     );
   }
 
   return {
     sendCallNotification({ date, caller }) {
-      return bot
-        .sendMessage(chatId, formatCallMessage({ date, caller }))
+      return api
+        .sendMessage({ chat_id: chatId, text: formatCallMessage({ date, caller }) })
         .catch((e) => log('Telegram-Fehler: ' + e.message));
     },
   };
