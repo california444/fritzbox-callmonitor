@@ -13,6 +13,7 @@
 import 'dotenv/config';
 import net from 'net';
 import TelegramBot from 'node-telegram-bot-api';
+import { parseCallmonitorData } from './callmonitor_parser.js';
 
 // Konfiguration aus Umgebungsvariablen (siehe .env)
 const FRITZBOX_IP = process.env.FRITZBOX_IP || '192.168.0.1';
@@ -44,12 +45,9 @@ function startMonitor() {
   });
 
   client.on('data', (data) => {
-    const lines = data.toString().split(/\r?\n/);
-    for (const line of lines) {
-      if (!line.trim()) continue;
-      const parts = line.split(';');
-      if (parts.length >= 6 && parts[1] === 'RING') {
-        const [date, type, , caller, called, connection] = parts;
+    for (const event of parseCallmonitorData(data)) {
+      if (event.kind === 'ring') {
+        const { date, caller, called, connection } = event;
         log('\n' + '-'.repeat(50));
         log(`📞 Incoming Call!`);
         log('-'.repeat(50));
@@ -63,7 +61,7 @@ function startMonitor() {
         const msg = `📞 Eingehender Anruf\nDatum: ${date}\nRufnummer: ${caller}`;
         telegramBot.sendMessage(TELEGRAM_CHAT_ID, msg).catch(e => log('Telegram-Fehler: ' + e.message));
       } else {
-        log(`Received: ${line}`);
+        log(`Received: ${event.line}`);
       }
     }
   });

@@ -4,6 +4,10 @@
   "type": "module",
   "description": "Fritzbox Callmonitor mit Telegram-Benachrichtigung",
   "main": "fritzbox_callmonitor.js",
+  "scripts": {
+    "test": "node --test",
+    "start": "node fritzbox_callmonitor.js"
+  },
   "dependencies": {
     "dotenv": "^16.0.3",
     "node-telegram-bot-api": "^0.61.0"
