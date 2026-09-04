@@ -12,8 +12,8 @@
 
 import 'dotenv/config';
 import net from 'net';
-import TelegramBot from 'node-telegram-bot-api';
 import { parseCallmonitorData } from './callmonitor_parser.js';
+import { createTelegramNotifier } from './telegram_notifier.js';
 
 // Konfiguration aus Umgebungsvariablen (siehe .env)
 const FRITZBOX_IP = process.env.FRITZBOX_IP || '192.168.0.1';
@@ -22,7 +22,11 @@ const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 const RECONNECT_DELAY_MS = 5000;
 
-const telegramBot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: false });
+const notifier = createTelegramNotifier({
+  token: TELEGRAM_BOT_TOKEN,
+  chatId: TELEGRAM_CHAT_ID,
+  log: (msg) => log(msg),
+});
 
 function log(msg) {
   const ts = new Date().toISOString().replace('T', ' ').replace(/\..+/, '');
@@ -58,8 +62,7 @@ function startMonitor() {
         log('-'.repeat(50) + '\n');
 
         // Telegram-Benachrichtigung
-        const msg = `📞 Eingehender Anruf\nDatum: ${date}\nRufnummer: ${caller}`;
-        telegramBot.sendMessage(TELEGRAM_CHAT_ID, msg).catch(e => log('Telegram-Fehler: ' + e.message));
+        notifier.sendCallNotification({ date, caller });
       } else {
         log(`Received: ${event.line}`);
       }
