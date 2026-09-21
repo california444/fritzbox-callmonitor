@@ -1,5 +1,5 @@
 # Dockerfile für Fritzbox Callmonitor als systemd-Daemon
-FROM node:24-trixie
+FROM node:25-trixie
 
 # Arbeitsverzeichnis
 WORKDIR /app
