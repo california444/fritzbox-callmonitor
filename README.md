@@ -41,7 +41,7 @@ TELEGRAM_CHAT_ID=DEINE_CHAT_ID_HIER
 Der Container lädt den Quellcode automatisch aus dem GitHub-Repo:
 
 ```Dockerfile
-FROM node:24-bookworm
+FROM node:24-trixie
 WORKDIR /app
 RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 RUN git clone https://github.com/california444/fritzbox-callmonitor.git .
