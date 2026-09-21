@@ -1,5 +1,5 @@
 # Dockerfile für Fritzbox Callmonitor als systemd-Daemon
-FROM node:24-bookworm
+FROM node:25-bookworm
 
 # Arbeitsverzeichnis
 WORKDIR /app
