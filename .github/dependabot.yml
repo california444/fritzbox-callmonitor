@@ -18,7 +18,7 @@ updates:
           - "minor"
           - "patch"
 
-  # Docker-Basisimage (Dockerfile)
+  # Docker-Basisimage (node:24-trixie)
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
