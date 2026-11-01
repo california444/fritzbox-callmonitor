@@ -9,7 +9,7 @@
     "start": "node fritzbox_callmonitor.js"
   },
   "dependencies": {
-    "dotenv": "^18.0.8",
+    "dotenv": "^18.0.9",
     "node-telegram-bot-api": "^2.1.0"
   }
 }
